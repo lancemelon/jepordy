@@ -1,22 +1,24 @@
 import { useState } from 'react'
-import { parseQuestionFile } from './parse'
-import type { Clue, GameState } from './types'
+import { parseQuestionFile, type ParseResult } from './parse'
+import { assignDailyDoubles } from './game'
+import type { GameState } from './types'
 
 interface Props {
   onStart: (game: GameState) => void
 }
 
 export default function Setup({ onStart }: Props) {
-  const [clues, setClues] = useState<Clue[]>([])
+  const [parsed, setParsed] = useState<ParseResult | null>(null)
   const [source, setSource] = useState('')
   const [errors, setErrors] = useState<string[]>([])
   const [names, setNames] = useState(['Team 1', 'Team 2', 'Team 3'])
 
+  const clues = parsed?.clues ?? []
   const rounds = [...new Set(clues.map((c) => c.round))].sort((a, b) => a - b)
 
-  function accept(result: { clues: Clue[]; errors: string[] }, name: string) {
+  function accept(result: ParseResult, name: string) {
     setErrors(result.errors)
-    setClues(result.errors.length ? [] : result.clues)
+    setParsed(result.errors.length ? null : result)
     setSource(result.errors.length ? '' : name)
   }
 
@@ -25,7 +27,7 @@ export default function Setup({ onStart }: Props) {
     try {
       accept(await parseQuestionFile(file), file.name)
     } catch {
-      accept({ clues: [], errors: ['Could not read that file. Make sure it is an .xlsx file.'] }, '')
+      accept({ clues: [], final: null, hasDailyDoubleColumn: false, errors: ['Could not read that file. Make sure it is an .xlsx file.'] }, '')
     }
   }
 
@@ -36,7 +38,10 @@ export default function Setup({ onStart }: Props) {
 
   function start() {
     const teams = names.map((n) => n.trim()).filter(Boolean).map((name) => ({ name, score: 0 }))
-    onStart({ clues, teams, used: [], round: rounds[0] })
+    if (!parsed) return
+    // Use the sheet's "Daily Double" column if it has one, otherwise place them like the real game.
+    const placed = parsed.hasDailyDoubleColumn ? parsed.clues : assignDailyDoubles(parsed.clues)
+    onStart({ clues: placed, final: parsed.final, finalDone: false, teams, used: [], round: rounds[0] })
   }
 
   const canStart = clues.length > 0 && names.some((n) => n.trim())
@@ -48,7 +53,7 @@ export default function Setup({ onStart }: Props) {
       <section>
         <h2>1. Questions</h2>
         <p>
-          Upload an Excel file (.xlsx) with the columns <code>Round, Category, Value, Clue, Answer</code>.{' '}
+          Upload an Excel file (.xlsx) with the columns <code>Round, Category, Value, Clue, Answer</code>, plus an optional <code>Daily Double</code> column (put <code>yes</code> on those clues). A row with Round = <code>Final</code> is Final Jeopardy.{' '}
           <a href="/sample-questions.xlsx" download>Download the template</a> or{' '}
           <button className="link" onClick={useSample}>use the sample game</button>.
         </p>
@@ -61,7 +66,8 @@ export default function Setup({ onStart }: Props) {
         )}
         {clues.length > 0 && (
           <p className="ok">
-            Loaded {clues.length} questions from {source} across {rounds.length} round{rounds.length === 1 ? '' : 's'}.
+            Loaded {clues.length} questions from {source} across {rounds.length} round{rounds.length === 1 ? '' : 's'}
+            {parsed?.final ? ', plus Final Jeopardy' : ''}.
           </p>
         )}
       </section>

@@ -5,6 +5,13 @@ export interface Clue {
   value: number
   clue: string
   answer: string
+  dailyDouble: boolean
+}
+
+export interface FinalClue {
+  category: string
+  clue: string
+  answer: string
 }
 
 export interface Team {
@@ -14,6 +21,8 @@ export interface Team {
 
 export interface GameState {
   clues: Clue[]
+  final: FinalClue | null
+  finalDone: boolean
   teams: Team[]
   used: string[]
   round: number

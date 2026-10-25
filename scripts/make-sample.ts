@@ -152,15 +152,26 @@ const rounds: [string, [string, string][]][][] = [
   ],
 ]
 
-const rows: (string | number)[][] = [['Round', 'Category', 'Value', 'Clue', 'Answer']]
+// Like the real game: values double in the "Double Jeopardy!" rounds (2, 4) and reset to the base for rounds 1 and 3.
+// Daily Doubles: one in rounds 1 and 3, two in rounds 2 and 4, as `round|category|clue number`.
+const dailyDoubles = new Set([
+  '1|Movies|4',
+  '2|Literature|4', '2|Space|5',
+  '3|TV|4',
+  '4|Math|5', '4|Art|4',
+])
+
+const rows: (string | number)[][] = [['Round', 'Category', 'Value', 'Clue', 'Answer', 'Daily Double']]
 rounds.forEach((categories, r) => {
   const round = r + 1
+  const step = round % 2 === 0 ? 200 : 100
   for (const [category, clues] of categories) {
     clues.forEach(([clue, answer], i) => {
-      rows.push([round, category, round * 100 * (i + 1), clue, answer])
+      rows.push([round, category, step * (i + 1), clue, answer, dailyDoubles.has(`${round}|${category}|${i + 1}`) ? 'yes' : ''])
     })
   }
 })
+rows.push(['Final', 'Seas', '', 'This sea has no coastline; it is defined by ocean currents rather than land', 'The Sargasso Sea', ''])
 
-await writeXlsxFile(rows, { columns: [{ width: 8 }, { width: 18 }, { width: 8 }, { width: 70 }, { width: 30 }] }).toFile('public/sample-questions.xlsx')
-console.log(`Wrote ${rows.length - 1} questions to public/sample-questions.xlsx`)
+await writeXlsxFile(rows, { columns: [{ width: 8 }, { width: 18 }, { width: 8 }, { width: 70 }, { width: 30 }, { width: 13 }] }).toFile('public/sample-questions.xlsx')
+console.log(`Wrote ${rows.length - 1} rows to public/sample-questions.xlsx`)

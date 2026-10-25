@@ -94,3 +94,9 @@ code { background: var(--blue-dark); padding: 0.1rem 0.35rem; border-radius: 4px
 .award button.right.on { background: #1f9d4c; border-color: #1f9d4c; }
 .award button.wrong.on { background: #c0392b; border-color: #c0392b; }
 .modal-actions { display: flex; gap: 0.6rem; }
+
+.dd-banner { color: var(--gold); font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
+.team-pick { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+.team-pick .picked { background: var(--gold); color: #1a1a1a; border-color: var(--gold); }
+.wager { display: grid; gap: 0.4rem; justify-items: center; }
+.award input { width: 9rem; justify-self: end; }
