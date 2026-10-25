@@ -1,7 +1,7 @@
 import writeXlsxFile from 'write-excel-file/node'
 
-// 4 rounds x 5 categories x 5 clues = 100 questions
-const rounds: [string, [string, string][]][][] = [
+// A pool of categories (5 clues each, easiest to hardest); the game layout below picks 12 of them.
+const pool: [string, [string, string][]][][] = [
   [
     ['Geography', [
       ['The longest river in Africa', 'The Nile'],
@@ -152,20 +152,23 @@ const rounds: [string, [string, string][]][][] = [
   ],
 ]
 
-// Like the real game: values double in the "Double Jeopardy!" rounds (2, 4) and reset to the base for rounds 1 and 3.
-// Daily Doubles: one in rounds 1 and 3, two in rounds 2 and 4, as `round|category|clue number`.
-const dailyDoubles = new Set([
-  '1|Movies|4',
-  '2|Literature|4', '2|Space|5',
-  '3|TV|4',
-  '4|Math|5', '4|Art|4',
-])
+const categories = new Map(pool.flat())
+
+// Like the real game: 2 rounds of 6 categories x 5 clues, then Final Jeopardy.
+const rounds = [
+  ['Geography', 'Science', 'Movies', 'Food & Drink', 'Animals', 'Music'],
+  ['US History', 'Literature', 'Space', 'Mythology', 'Art', 'Inventions'],
+].map((names) => names.map((name) => [name, categories.get(name)!] as const))
+
+// Values double in Double Jeopardy! (round 2).
+// Daily Doubles: one in round 1, two in round 2, as `round|category|clue number`.
+const dailyDoubles = new Set(['1|Movies|4', '2|Literature|4', '2|Space|5'])
 
 const rows: (string | number)[][] = [['Round', 'Category', 'Value', 'Clue', 'Answer', 'Daily Double']]
-rounds.forEach((categories, r) => {
+rounds.forEach((roundCategories, r) => {
   const round = r + 1
-  const step = round % 2 === 0 ? 200 : 100
-  for (const [category, clues] of categories) {
+  const step = round === 2 ? 200 : 100
+  for (const [category, clues] of roundCategories) {
     clues.forEach(([clue, answer], i) => {
       rows.push([round, category, step * (i + 1), clue, answer, dailyDoubles.has(`${round}|${category}|${i + 1}`) ? 'yes' : ''])
     })
