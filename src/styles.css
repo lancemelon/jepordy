@@ -1,0 +1,96 @@
+:root {
+  --blue: #1a2a9c;
+  --blue-dark: #0c1566;
+  --gold: #ffcc00;
+  --bg: #060b33;
+  --text: #fff;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+button, input {
+  font: inherit;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid #5560c0;
+  background: var(--blue-dark);
+  color: var(--text);
+}
+button { cursor: pointer; }
+button:hover:not(:disabled) { background: #26379f; }
+button:disabled { opacity: 0.4; cursor: default; }
+button.primary { background: var(--gold); color: #1a1a1a; border-color: var(--gold); font-weight: 700; }
+button.primary:hover:not(:disabled) { background: #ffd93a; }
+button.link { background: none; border: none; padding: 0; color: var(--gold); text-decoration: underline; }
+a { color: var(--gold); }
+code { background: var(--blue-dark); padding: 0.1rem 0.35rem; border-radius: 4px; }
+
+/* Setup */
+.setup { max-width: 640px; margin: 0 auto; padding: 2rem 1rem; display: grid; gap: 1.5rem; }
+.setup h1 { color: var(--gold); text-align: center; font-size: 3rem; margin: 0; letter-spacing: 0.05em; }
+.setup section { background: var(--blue-dark); padding: 1rem 1.25rem; border-radius: 10px; }
+.setup h2 { margin-top: 0; }
+.team-row { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
+.team-row input { flex: 1; }
+.errors { color: #ff8a8a; }
+.ok { color: #7dffa0; }
+
+/* Game */
+.game { padding: 0.75rem; display: grid; gap: 0.75rem; min-height: 100vh; grid-template-rows: auto 1fr auto auto; }
+.game header { display: flex; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; }
+.game header > * { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.rounds button.active { background: var(--gold); color: #1a1a1a; border-color: var(--gold); }
+
+.board { display: grid; gap: 6px; }
+.category {
+  background: var(--blue);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 0.75rem 0.4rem;
+  min-height: 5rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: clamp(0.7rem, 1.6vw, 1.3rem);
+  overflow-wrap: anywhere;
+}
+.tile {
+  background: var(--blue);
+  color: var(--gold);
+  border: none;
+  border-radius: 4px;
+  font-weight: 800;
+  font-size: clamp(1.1rem, 3.5vw, 2.8rem);
+  min-height: 4.5rem;
+}
+.tile:disabled { background: #0a1050; opacity: 1; }
+.tile.empty { background: transparent; }
+.next { text-align: center; font-size: 1.15rem; margin: 0; }
+
+.scores { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
+.score { background: var(--blue-dark); border-radius: 10px; padding: 0.6rem 1rem; min-width: 150px; text-align: center; }
+.team-name { font-weight: 700; }
+.points { font-size: 2rem; font-weight: 800; color: var(--gold); }
+.points.neg { color: #ff8a8a; }
+.adjust { display: flex; gap: 0.3rem; justify-content: center; }
+.adjust button { padding: 0.15rem 0.5rem; font-size: 0.8rem; }
+
+/* Modal */
+.modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); display: grid; place-items: center; padding: 1rem; overflow: auto; }
+.clue-card { background: var(--blue); width: min(900px, 100%); border-radius: 12px; padding: 1.5rem; display: grid; gap: 1.25rem; justify-items: center; text-align: center; }
+.clue-meta { color: var(--gold); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+.clue-text { font-size: clamp(1.4rem, 4vw, 2.6rem); font-weight: 700; text-transform: uppercase; line-height: 1.25; }
+.answer { font-size: clamp(1.2rem, 3vw, 2rem); color: var(--gold); font-weight: 800; }
+.award-list { display: grid; gap: 0.4rem; width: 100%; max-width: 480px; }
+.award { display: grid; grid-template-columns: 1fr auto auto; gap: 0.4rem; align-items: center; text-align: left; }
+.award button.right.on { background: #1f9d4c; border-color: #1f9d4c; }
+.award button.wrong.on { background: #c0392b; border-color: #c0392b; }
+.modal-actions { display: flex; gap: 0.6rem; }
